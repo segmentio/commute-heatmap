@@ -1,0 +1,11 @@
+{
+  "name": "commute-heatmap",
+  "description": "Compute commute times in San Francisco for generating a heatmap visualization.",
+  "version": "0.0.1",
+  "license": "MIT",
+  "dependencies": {
+    "@google/maps": "^0.3.0",
+    "thunkify": "^2.1.2",
+    "vo": "^4.0.2"
+  }
+}
