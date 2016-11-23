@@ -1,5 +1,7 @@
 # commute-heatmap
-Computes commute times in San Francisco for generating a heatmap visualization.
+Where should you locate your office to minimize commutes for your team?
+
+This script computes median commute times for your existing team to various office locations in San Francisco.
 
 ![](https://cloudup.com/ic33c_w_N-v+)
 
