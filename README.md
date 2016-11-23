@@ -1,5 +1,4 @@
-# commute-heatmap
-Where should you locate your office to minimize commutes for your team?
+# Where should you put your office to minimize team commute time?
 
 This script computes median commute times for your existing team to various office locations in San Francisco.
 
