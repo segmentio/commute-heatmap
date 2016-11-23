@@ -1,4 +1,4 @@
-# Where should you put your office to minimize team commute time?
+# How does office location affect median team commute time?
 
 This script computes median commute times for your existing team to various office locations in San Francisco.
 
