@@ -5,6 +5,8 @@
   "license": "MIT",
   "dependencies": {
     "@google/maps": "^0.3.0",
+    "async": "^2.1.4",
+    "lodash": "^4.17.2",
     "thunkify": "^2.1.2",
     "vo": "^4.0.2"
   }
