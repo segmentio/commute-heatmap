@@ -1,5 +1,12 @@
-var maps = require('@google/maps');
+
+/**
+ * Module dependencies.
+ */
+
+var parallel = require('async').parallel;
 var thunkify = require('thunkify');
+var maps = require('@google/maps');
+var _ = require('lodash');
 var vo = require('vo');
 
 // Initialize the Google Maps directions client.
@@ -42,7 +49,7 @@ vo(function *() {
       for (var i = 0; i < locations.length; i++) {
         var location = locations[i];
         var from = [location.lat, location.lng].join(', ');
-        var duration = yield getDuration(from, to, 'transit');
+        var duration = yield getDuration(from, to);
         durations.push(duration);
       }
 
@@ -67,7 +74,6 @@ vo(function *() {
     }
  }
 
-
 /**
  * Hit Google Maps API for geocoding the addresses.
  *
@@ -84,30 +90,59 @@ function geocodeAddress(address, cb) {
   });
 }
 
-
 /**
  * Hit google maps API for the shortest from/to transit duration.
  *
  * @from — lat/lon string
  * @to — lat/lon string
- * @transit - driving, bicycling, transit
  * @cb — callback(err, duration_in_minutes)
  */
 
-function shortestDuration(from, to, transit, cb) {
-  client.directions({
-    origin: from,
-    destination: to,
-    mode: transit,
-    departure_time: new Date(2016, 12, 7, 8)
-  }, function (err, response) {
+function shortestDuration(from, to, cb) {
+  parallel([
+    function(callback) {
+      client.directions({
+        origin: from,
+        destination: to,
+        mode: 'walking',
+        departure_time: new Date(2016, 12, 7, 8)
+      }, callback)
+    },
+    function(callback) {
+      client.directions({
+        origin: from,
+        destination: to,
+        mode: 'bicycling',
+        departure_time: new Date(2016, 12, 7, 8)
+      }, callback)
+    },
+    function(callback) {
+      client.directions({
+        origin: from,
+        destination: to,
+        mode: 'transit',
+        departure_time: new Date(2016, 12, 7, 8)
+      }, callback)
+    }
+  ],
+  function(err, res) {
     if (err) return cb(err);
-    var legs = response.json.routes[0].legs;
-    var duration = 0;
-    legs.forEach(function (leg) {
-      duration += leg.duration.value;
+    var durations = _.map(res, function(route) {
+      return calculateDuration(route.json.routes[0].legs)
     });
-    duration = Math.round(duration/60);
-    cb(null, duration);
+    cb(null, _.min(durations));
   });
+}
+
+/**
+ * Calculate duration.
+ */
+
+function calculateDuration(legs) {
+  var d = 0;
+  legs.forEach(function (leg) {
+    d += leg.duration.value;
+  });
+  d = Math.round(d/60);
+  return d;
 }
