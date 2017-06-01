@@ -1,6 +1,6 @@
-# How does office location affect median team commute time?
+# How does office location affect your team's commute time?
 
-This script computes median commute times for your existing team to various office locations in San Francisco.
+This script computes median commute times from your existing team's home addresses to various office locations in San Francisco. You may also modify the script for your city.
 
 ![](https://cloudup.com/ic33c_w_N-v+)
 
