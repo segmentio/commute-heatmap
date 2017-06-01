@@ -10,3 +10,7 @@ This script computes median commute times from your existing team's home address
 * Loops over a grid of San Francisco lat/lon coordinates
 * Computes the median commute time for the whole team
 * Outputs an array of lat/lon/median_commute for input into Carto.com
+
+## License
+
+Released under the [MIT license](https://github.com/segmentio/commute-heatmap/blob/master/License.md).
