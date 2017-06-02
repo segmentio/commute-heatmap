@@ -17,7 +17,7 @@ var client = maps.createClient({
 // Set up our grid of heatmap testing locations.
 var westmost = -122.513494;
 var eastmost = -122.387552;
-var lonGridSize = (westmost - eastmost)/20;
+var lonGridSize = (eastmost - westmost)/20;
 
 var southmost = 37.700847;
 var northmost = 37.808312;
@@ -41,8 +41,8 @@ vo(function *() {
     locations.push(location);
   }
 
-  for (var lon = -122.488306; lon >= westmost; lon += lonGridSize) {
-    for (var lat = 37.733086; lat <= 37.786819; lat += latGridSize) {
+  for (var lon = westmost; lon <= eastmost; lon += lonGridSize) {
+    for (var lat = southmost; lat <= northmost; lat += latGridSize) {
       var durations = [];
       var to = [lat.toPrecision(8), lon.toPrecision(9)].join(', ');
 
