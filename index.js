@@ -9,6 +9,8 @@ var maps = require('@google/maps');
 var _ = require('lodash');
 var vo = require('vo');
 
+// - - - - Start user-defined settings - - - - -
+
 // Initialize the Google Maps directions client.
 var client = maps.createClient({
   key: '...Google Maps API Key here...'
@@ -17,16 +19,24 @@ var client = maps.createClient({
 // Set up our grid of heatmap testing locations.
 var westmost = -122.513494;
 var eastmost = -122.387552;
-var lonGridSize = (westmost - eastmost)/20;
+var lonGridSize = (eastmost - westmost)/20;
 
 var southmost = 37.700847;
 var northmost = 37.808312;
 var latGridSize = (northmost - southmost)/20;
 
+// Must be in the future
+var testDateTime = new Date(2020, 12, 7, 8)
+
 // Address data
+// Example format: '100 California St, San Francisco, CA'
 var addresses = [
-  '...your team addresses here...'
+  '...your team home addresses here...',
 ];
+
+// - - - - End user-defined settings - - - - -
+
+
 var locations = [];
 
 // Make our Google Maps API functions yield-able.
@@ -41,8 +51,11 @@ vo(function *() {
     locations.push(location);
   }
 
-  for (var lon = -122.488306; lon >= westmost; lon += lonGridSize) {
-    for (var lat = 37.733086; lat <= 37.786819; lat += latGridSize) {
+  // Set headers in CSV so that carto.com imports correctly
+  console.log('Lat, Lon, Value');
+
+  for (var lon = westmost; lon <= eastmost; lon += lonGridSize) {
+    for (var lat = southmost; lat <= northmost; lat += latGridSize) {
       var durations = [];
       var to = [lat.toPrecision(8), lon.toPrecision(9)].join(', ');
 
@@ -53,7 +66,7 @@ vo(function *() {
         durations.push(duration);
       }
 
-      console.log(to, median(durations));
+      console.log(to, ',', median(durations));
     }
   }
 })()
@@ -105,7 +118,7 @@ function shortestDuration(from, to, cb) {
         origin: from,
         destination: to,
         mode: 'walking',
-        departure_time: new Date(2016, 12, 7, 8)
+        departure_time: testDateTime
       }, callback)
     },
     function(callback) {
@@ -113,7 +126,7 @@ function shortestDuration(from, to, cb) {
         origin: from,
         destination: to,
         mode: 'bicycling',
-        departure_time: new Date(2016, 12, 7, 8)
+        departure_time: testDateTime
       }, callback)
     },
     function(callback) {
@@ -121,13 +134,17 @@ function shortestDuration(from, to, cb) {
         origin: from,
         destination: to,
         mode: 'transit',
-        departure_time: new Date(2016, 12, 7, 8)
+        departure_time: testDateTime
       }, callback)
     }
   ],
   function(err, res) {
     if (err) return cb(err);
-    var durations = _.map(res, function(route) {
+    // filter out unavailable options
+    var options = _.filter(res, function(route) {
+      return route.json.routes.length
+    });
+    var durations = _.map(options, function(route) {
       return calculateDuration(route.json.routes[0].legs)
     });
     cb(null, _.min(durations));
